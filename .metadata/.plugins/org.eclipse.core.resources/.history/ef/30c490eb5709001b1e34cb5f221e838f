@@ -1,0 +1,105 @@
+package com.example.demo.Controller;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.DAO.EmployeeDao;
+import com.example.demo.MODEL.Employee;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Contact;
+
+import java.util.Optional;
+
+
+@RestController
+@RequestMapping("/employee")
+public class EmployeeController {
+	static final Logger logger  = LogManager.getLogger(EmployeeController.class.getName());
+	Date date = new Date();
+	 
+	@Autowired
+	private EmployeeDao empDao;
+	
+	
+	@PostMapping("/addEmployee")
+	@ApiOperation(value="Save employees",notes="Provide list of employees")
+	public ResponseEntity<String> addEmployee(@RequestBody List<Employee> employee) {
+		empDao.saveAll(employee);
+		logger.log(Level.INFO,employee.size()+" Employees Added on "+date);
+		return new ResponseEntity<String>(employee.size()+" Employees Added",HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/findEmployee/{id}")
+	@ApiOperation(value="Find employee",notes="Provide id of employee")
+	public ResponseEntity<Employee> findEmployee(@PathVariable("id") Integer id) {
+		Optional<Employee> employee=empDao.findById(id);
+		if(employee.isPresent()) {
+			logger.log(Level.INFO,"Search for employee "+employee.get().getEmployeename()+" on "+date);
+			return new ResponseEntity<Employee>(employee.get(),HttpStatus.OK);
+			
+		}else {
+			logger.log(Level.WARN," Employee not present");
+		}
+		return new ResponseEntity<Employee>(HttpStatus.NOT_FOUND);
+		 
+	}
+	
+	@GetMapping("/getAllEmployee")
+	@ApiOperation(value="Retrive all employees")
+	public ResponseEntity<List<Employee>> getAllEmployee(){
+		List<Employee> allEmployees = new ArrayList<Employee>();
+		empDao.findAll().forEach(allEmployees::add);
+		logger.log(Level.INFO,"Listed all employee on "+date);
+		return new ResponseEntity<List<Employee>>(allEmployees,HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/deleteEmployee/{id}")
+	@ApiOperation(value="Delete particular employee",notes="Provide id of employee")
+	public ResponseEntity<String> deleteEmployee(@PathVariable("id") Integer id) {
+		if(empDao.existsById(id)) {
+			logger.log(Level.INFO,"Delete employee with id "+id +" on "+date);
+			empDao.deleteById(id);
+			return new ResponseEntity<String>(HttpStatus.OK);
+		}else {
+			logger.log(Level.WARN," Employee not present");
+			return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+		}
+	}
+	
+	@PutMapping("/editEmployee/{id}")
+	@ApiOperation(value="Edit employee", notes="Provide id of employee")
+	public ResponseEntity<String> editEmployee(@PathVariable(value = "id") Integer id, @RequestBody Employee employee) {
+	//Check if data exist for particular id 
+	Optional<Employee> existingEmployee=empDao.findById(id);
+	if(existingEmployee.isPresent()) {
+		Employee data=existingEmployee.get();
+		data.setEmployeecode(employee.getEmployeecode());
+		data.setEmployeename(employee.getEmployeename());
+		data.setEmployeedept(employee.getEmployeedept());
+		data.setEmployeedesign(employee.getEmployeedesign());
+		data.setEmployeeaddress(employee.getEmployeeaddress());
+		logger.log(Level.INFO,"Updated employee with id "+id +" on "+date);
+		empDao.save(data);
+		return new ResponseEntity<String>(" Employees details updated successfully",HttpStatus.OK);
+	}
+	return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+	}
+}

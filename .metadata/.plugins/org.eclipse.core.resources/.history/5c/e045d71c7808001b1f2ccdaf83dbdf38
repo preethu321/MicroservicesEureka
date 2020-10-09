@@ -1,0 +1,24 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+    
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Home</title>
+</head>
+<body>
+<form:form method="post"action="employee/addEmployee" modelAttribute="employee">
+<input type="text" name="employeecode"><br>
+<input type="text" name="employeename"><br>
+<input type="text" name="employeedesign"><br>
+<input type="text" name="employeedept"><br>
+<input type="text" name="employeeaddress"><br>
+<input type="submit"><br>
+</form:form>
+
+</body>
+</html>
+

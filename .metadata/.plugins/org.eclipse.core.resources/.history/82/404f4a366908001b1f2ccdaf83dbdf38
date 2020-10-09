@@ -1,0 +1,30 @@
+package com.example.demo.Controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.demo.DAO.EmployeeDao;
+import com.example.demo.MODEL.Employee;
+@Controller
+public class HomeController {
+	@Autowired
+	private EmployeeDao empDao;
+	@RequestMapping("home")
+	public String homePage() {
+		
+		return "home";
+	}
+	@RequestMapping("/addEmployee")
+	public String addEmployee(Employee employee) {
+		empDao.save(employee);
+		return " Employees Added";
+		
+	}
+}

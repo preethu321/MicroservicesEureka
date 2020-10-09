@@ -1,0 +1,15 @@
+package com.example.demo.resources;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class MovieCatalogResource {
+public List<CatalogItem> getCatalog(String id) {
+	return Collections.singletonList(
+			new CatalogItem("Transformer", "English Movie", 4) );
+	
+}
+}

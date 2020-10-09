@@ -1,0 +1,10 @@
+package com.example.demo.resources;
+
+import com.example.demo.models.Movie;
+
+public class MovieResource {
+public Movie getMovieInfo() {
+	return null;
+	
+}
+}
